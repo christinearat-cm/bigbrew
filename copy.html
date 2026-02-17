@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BigBrew — Big in Taste, Bit in Price</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,800;0,900;1,800;1,900&family=Lato:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* === BRAND COLORS (Never Change) === */
+      --brand-dark: #2d0700; 
+      --brand-brown: #bb6d19;
+      --brand-white: #ffffff;
+      
+      /* === DEFAULT: DARK MODE VARIABLES === */
+      --bg-color: var(--brand-dark);
+      --text-main: var(--brand-white);
+      --text-muted: rgba(255, 255, 255, 0.75);
+
+      --nav-bg-scrolled: rgba(45, 7, 0, 0.95);
+      --nav-pill-bg: var(--brand-white);
+      --nav-link-color: #2e1c0a;
+
+      --nav-highlight-bg: var(--brand-brown);
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.05);
+      --card-hover-bg: rgba(187, 109, 25, 0.1);
+
+      --input-bg: var(--brand-white);
+      --input-text: #333;
+      --input-placeholder: rgba(0, 0, 0, 0.6); /* FIX: Always visible placeholder */
+      --footer-bg: rgba(0, 0, 0, 0.5);
+
+      --icon-filter: none;
+    }
+
+    /* === LIGHT MODE VARIABLES === */
+    body.light-mode {
+      --bg-color: #fdf8f4; 
+      --text-main: var(--brand-dark);
+      --text-muted: rgba(45, 7, 0, 0.65);
+
+      --nav-bg-scrolled: rgba(253, 248, 244, 0.95);
+      
+      --nav-pill-bg: #bb6d19; 
+      --nav-link-color: var(--brand-dark);
+      --nav-highlight-bg: var(--brand-dark);
+
+      --card-bg: #f7efe8; 
+      --card-border: rgba(187, 109, 25, 0.15); 
+      --card-hover-bg: rgba(187, 109, 25, 0.1);
+
+      --input-bg: #ffffff;
+      --input-text: var(--brand-dark);
+      --input-placeholder: rgba(45, 7, 0, 0.6); /* FIX: Always visible placeholder */
+      --footer-bg: #f0e6da;
+
+      --icon-filter: brightness(0) saturate(100%) invert(10%) sepia(35%) saturate(5796%) hue-rotate(345deg) brightness(88%) contrast(100%);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-main);
+      overflow-x: hidden;
+      transition: background-color 0.4s ease, color 0.4s ease;
+    }
+    
+    body.no-scroll {
+      overflow: hidden; /* Stops background from scrolling when mobile menu is open */
+    }
+
+    /* ===================== NAVBAR ===================== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 60px;
+      background: transparent;
+      transition: background 0.3s, padding 0.3s;
+    }
+    
+    nav.scrolled { 
+      background: var(--nav-bg-scrolled); 
+      backdrop-filter: blur(10px); 
+      padding: 16px 60px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .nav-logo {
+      width: 70px; 
+      height: auto;
+      object-fit: contain;
+      z-index: 2000;
+      position: relative;
+      transition: opacity 0.3s ease;
+    }
+
+    .nav-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--nav-pill-bg);
+      border-radius: 40px;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+      transition: background-color 0.4s ease;
+    }
+
+    .nav-center a {
+      font-family: 'Lato', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--nav-link-color);
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      position: relative;
+      z-index: 1;
+      transition: color 0.3s;
+    }
+
+    .nav-center a.active,
+    .nav-center a:hover { color: var(--brand-white); }
+
+    .nav-highlight {
+      position: absolute;
+      height: calc(100% - 12px);
+      background: var(--nav-highlight-bg);      
+      border-radius: 30px;
+      transition: all 0.3s ease;
+      z-index: 0;
+      top: 6px;
+    }
+
+    /* RIGHT CONTROLS (THEME TOGGLE + HAMBURGER) */
+    .nav-right-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      z-index: 2000; 
+      position: relative;
+    }
+
+    .theme-toggle {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; transition: all 0.3s ease;
+    }
+    .theme-toggle:hover {
+      background: var(--brand-brown);
+      border-color: var(--brand-brown);
+      color: var(--brand-white);
+      transform: rotate(15deg) scale(1.05);
+    }
+
+    .hamburger {
+      display: none; 
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      padding: 4px;
+    }
+    .hamburger span {
+      width: 26px; height: 3px;
+      background: var(--text-main);
+      border-radius: 3px;
+      transition: all 0.3s ease;
+    }
+    .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
+
+
+    /* ===================== HERO SECTION ===================== */
+    #home {
+      background: var(--bg-color);
+      display: flex;
+      align-items: center;
+      min-height: 100vh;
+      /* FIX: Binawasan ang top at bottom padding para hindi mapuwersa pababa ang content */
+      padding: 80px 0 0 60px; 
+      position: relative;
+      transition: background-color 0.4s ease;
+    }
+
+    .hero-content {
+      flex: 1.1; 
+      padding-right: 40px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-tagline {
+      font-family: 'Lato', sans-serif;
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--text-main);
+      margin-bottom: -5px;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-style: italic;
+      font-size: clamp(60px, 8vw, 150px);
+      line-height: 1.1;
+      color: var(--text-main);
+      margin-bottom: 40px;
+      letter-spacing: -3px;
+    }
+
+    .hero-product-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin-bottom: 16px;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-desc {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--text-muted);
+      max-width: 500px;
+      margin-bottom: 30px;
+    }
+
+    .hero-pricing {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .price-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .price-item label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .price-item .amount {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 48px;
+      color: var(--brand-brown);
+      line-height: 1;
+    }
+
+    .product-selector-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 20px;
+      background: var(--brand-brown);
+      padding: 16px 40px;
+      border-radius: 60px;
+    }
+
+    .thumb-wrapper {
+      width: 70px; 
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: transparent;
+    }
+
+    .thumb-wrapper.active {
+      background: var(--brand-white);
+      transform: scale(1.1);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    .thumb-wrapper img {
+      width: 75%;
+      height: 75%;
+      object-fit: contain;
+      transition: transform 0.3s;
+    }
+
+    .thumb-wrapper:hover:not(.active) img {
+      transform: scale(1.1);
+    }
+
+    .hero-right {
+      flex: 1;
+      position: relative;
+      /* FIX: Pinalitan ang height:100vh to stretch para hindi maging dambuhala yung gap sa top */
+      align-self: stretch; 
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .hero-golden-shape {
+      position: absolute;
+      right: 0;
+      top: 15vh;
+      height: 70vh;
+      width: 50%;
+      background: var(--brand-brown);
+      border-radius: 80px 0 0 80px;
+      z-index: 1;
+    }
+
+    .hero-product-img {
+      position: absolute;
+      left: -5%;
+      height: 90vh; 
+      top: 5vh;
+      object-fit: contain;
+      z-index: 3;
+      filter: drop-shadow(-20px 20px 40px rgba(0,0,0,0.5));
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .hero-vertical-text {
+      position: absolute;
+      right: 80px;
+      top: 55%;
+      transform: translateY(-50%) rotate(180deg);
+      writing-mode: vertical-rl;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 8vh; 
+      white-space: nowrap;
+      z-index: 2;
+      pointer-events: none;
+      letter-spacing: 2px;
+      line-height: 1; 
+      text-align: left;
+    }
+
+    .hero-vertical-text .text-solid {
+      color: var(--text-main);
+    }
+
+    .hero-vertical-text .text-outline {
+      color: transparent;
+      -webkit-text-stroke: 2px var(--text-muted);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(10deg); }
+    }
+
+    /* ===================== MARQUEE ===================== */
+    .marquee-section {
+      background: var(--brand-brown);
+      padding: 14px 0;
+      overflow: hidden;
+    }
+
+    .marquee-track {
+      display: flex;
+      gap: 60px;
+      animation: marquee 15s linear infinite;
+      white-space: nowrap;
+    }
+
+    .marquee-item {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 28px;
+      color: var(--brand-white);
+      opacity: 0.9;
+      flex-shrink: 0;
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* ===================== MENU ===================== */
+    #menu { background: var(--bg-color); padding: 100px 60px; transition: background-color 0.4s ease; }
+    .section-header { text-align: center; margin-bottom: 60px; }
+    .section-label { font-size: 12px; text-transform: uppercase; letter-spacing: 4px; color: var(--brand-brown); margin-bottom: 12px; }
+    .section-title { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: clamp(40px, 8vw, 96px); color: var(--text-main); line-height: 1; }
+
+    .menu-tabs { display: flex; justify-content: center; gap: 12px; margin-bottom: 50px; flex-wrap: wrap; }
+    .menu-tab { font-family: 'Lato', sans-serif; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); background: var(--card-bg); border: 1px solid var(--card-border); padding: 12px 28px; border-radius: 30px; cursor: pointer; transition: all 0.3s; }
+    .menu-tab:hover, .menu-tab.active { background: var(--brand-brown); color: var(--brand-white); border-color: var(--brand-brown); }
+
+    .menu-panel { display: none; }
+    .menu-panel.active { display: block; }
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px; }
+    
+    .menu-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; overflow: hidden; transition: all 0.3s; cursor: pointer; }
+    .menu-card:hover { background: var(--card-hover-bg); border-color: var(--brand-brown); transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+    .menu-card-img-wrap { background: rgba(0,0,0,0.02); padding: 24px; display: flex; justify-content: center; align-items: center; height: 200px; }
+    .menu-card img { height: 160px; width: auto; object-fit: contain; transition: transform 0.3s; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4)); }
+    .menu-card:hover img { transform: scale(1.1); }
+    .menu-card-info { padding: 16px 20px; border-top: 1px solid var(--card-border); }
+    .menu-card-name { font-family: 'Lato', sans-serif; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); text-align: center; }
+
+    /* ===================== SECTIONS ===================== */
+    #reviews, #branches, #about, #contact { background: var(--bg-color); padding: 100px 60px; position: relative; transition: background-color 0.4s ease; }
+    #reviews::before, #branches::before, #about::before, #contact::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, var(--brand-brown), transparent); }
+
+    .reviews-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; margin-top: 50px; }
+    .review-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 30px; transition: all 0.3s; }
+    .review-card:hover { background: var(--card-hover-bg); border-color: rgba(187, 109, 25, 0.4); transform: translateY(-4px); }
+    .stars { display: flex; gap: 4px; margin-bottom: 16px; }
+    .star { width: 18px; height: 18px; fill: var(--brand-brown); }
+    .review-text { font-size: 15px; line-height: 1.7; color: var(--text-muted); margin-bottom: 20px; font-style: italic; }
+    .review-author { font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--brand-brown); }
+
+    /* ===================== BRANCHES ===================== */
+    .branches-layout { display: grid; grid-template-columns: 220px 1fr; gap: 40px; margin-top: 50px; align-items: start; }
+    
+    .branches-sidebar { 
+      background: var(--brand-white); 
+      border-radius: 16px; 
+      padding: 30px 20px; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: flex-start; 
+      gap: 16px; 
+      position: sticky; 
+      top: 100px; 
+      transition: all 0.4s ease; 
+    }
+    
+    .branches-more-btn { 
+      display: flex; 
+      align-items: center; 
+      gap: 8px; 
+      background: transparent; 
+      border: 2px solid var(--brand-brown); 
+      border-radius: 8px; 
+      padding: 8px 14px; 
+      font-family: 'Lato', sans-serif; 
+      font-weight: 700; 
+      font-size: 13px; 
+      text-transform: uppercase; 
+      color: var(--brand-brown); 
+      cursor: pointer; 
+      text-decoration: none; 
+      transition: all 0.2s; 
+    }
+    
+    .branches-more-btn:hover { 
+      background: var(--brand-brown); 
+      color: var(--brand-white); 
+    }
+    
+    .branches-sidebar-title { 
+      font-family: 'Montserrat', sans-serif; 
+      font-weight: 800; 
+      font-size: 42px; 
+      color: var(--brand-brown); 
+      line-height: 1; 
+      text-transform: uppercase; 
+      writing-mode: vertical-rl; 
+      transform: rotate(180deg); 
+      align-self: center; 
+      margin: 10px auto; 
+      letter-spacing: 2px; 
+      transition: color 0.4s ease;
+    }
+
+    body.light-mode .branches-sidebar { background: var(--brand-dark); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+    body.light-mode .branches-more-btn { border-color: var(--brand-white); color: var(--brand-white); }
+    body.light-mode .branches-more-btn:hover { background: var(--brand-white); color: var(--brand-dark); }
+    body.light-mode .branches-sidebar-title { color: var(--brand-white); }
+    
+    .branches-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .branch-card { background: var(--brand-brown); border-radius: 12px; padding: 22px 24px; transition: all 0.3s; cursor: default; }
+    .branch-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.2); background: #d67e1e; }
+    .branch-name { font-family: 'Lato', sans-serif; font-weight: 700; font-size: 18px; color: #ffffff; margin-bottom: 8px; }
+    .branch-addr { font-family: 'Lato', sans-serif; font-size: 14px; color: rgba(255,255,255,0.85); line-height: 1.5; }
+
+    /* ===================== ABOUT ===================== */
+    .about-banner { position: relative; width: 100%; min-height: 350px; border-radius: 20px; overflow: hidden; margin-bottom: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
+    .about-banner-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); z-index: 0; }
+    .about-banner-text { position: relative; z-index: 1; text-align: center; }
+    .about-banner-text .section-label { font-size: 24px; font-weight: 700; text-transform: none; letter-spacing: 2px; color: #ffffff; margin-bottom: 4px; text-shadow: 1px 2px 4px rgba(0,0,0,0.6); }
+    .about-banner-text .section-title { margin-bottom: 0; text-shadow: 2px 4px 10px rgba(0,0,0,0.6); color: #ffffff;}
+    
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 60px; }
+    .about-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 40px; transition: background-color 0.4s ease, border-color 0.4s ease; }
+    .about-card-num { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 80px; color: var(--brand-brown); opacity: 0.3; line-height: 1; margin-bottom: -20px; }
+    .about-card-title { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 36px; color: var(--text-main); margin-bottom: 20px; }
+    .about-card-text { font-size: 16px; line-height: 1.8; color: var(--text-muted); }
+    
+    .social-links { display: flex; gap: 16px; margin-top: 50px; justify-content: center; }
+    .social-link { width: 50px; height: 50px; border-radius: 50%; background: var(--card-bg); border: 1px solid var(--card-border); display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 20px; transition: all 0.3s; }
+    .social-link img { filter: var(--icon-filter); transition: filter 0.4s; }
+    .social-link:hover { background: var(--brand-brown); border-color: var(--brand-brown); }
+    .social-link:hover img { filter: none; }
+
+    /* ===================== CONTACT ===================== */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 60px; }
+    .contact-left h2 { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: clamp(40px, 5vw, 70px); line-height: 1.1; margin-bottom: 24px; color: var(--text-main); }
+    .contact-left p { font-size: 16px; line-height: 1.8; color: var(--text-muted); margin-bottom: 40px; }
+    .contact-email-list { list-style: none; }
+    .contact-email-list li { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .email-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand-brown); flex-shrink: 0; }
+    .contact-email-list a { color: var(--text-main); text-decoration: underline; font-size: 16px; transition: color 0.2s; }
+    .contact-email-list a:hover { color: var(--brand-brown); }
+
+    .contact-form { display: flex; flex-direction: column; gap: 16px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-input { 
+      width: 100%; 
+      background: var(--input-bg); 
+      border: 1px solid var(--card-border); 
+      border-radius: 4px; 
+      padding: 16px 18px; 
+      font-family: 'Lato', sans-serif; 
+      font-size: 16px; 
+      color: var(--input-text); 
+      outline: none; 
+      transition: box-shadow 0.2s, background 0.4s, border-color 0.4s; 
+    }
+    .form-input:focus { box-shadow: 0 0 0 2px var(--brand-brown); border-color: transparent;}
+    .form-input::placeholder { color: var(--input-placeholder); }
+    textarea.form-input { resize: vertical; min-height: 140px; }
+    .submit-btn { background: var(--brand-brown); color: var(--brand-white); border: none; border-radius: 4px; padding: 18px 40px; font-family: 'Lato', sans-serif; font-weight: 700; font-size: 16px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: all 0.3s; width: 100%; }
+    .submit-btn:hover { background: #d67e1e; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(187,109,25,0.3); }
+
+    footer { background: var(--footer-bg); text-align: center; padding: 24px; font-size: 14px; color: var(--text-muted); font-style: italic; border-top: 1px solid var(--card-border); transition: background 0.4s ease;}
+
+    /* ===================== ANIMATIONS ===================== */
+    .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ===================== MOBILE RESPONSIVE FIXES ===================== */
+    @media (max-width: 900px) {
+      /* Navbar Settings */
+      nav { padding: 16px 24px; }
+      nav.scrolled { padding: 16px 24px; }
+      .nav-logo { width: 55px; }
+      
+      .hamburger { display: flex; } 
+      
+      /* FIX: Mobile Menu Solid Background and Z-index Logic */
+      nav.menu-active {
+        background: var(--bg-color) !important; 
+        backdrop-filter: none !important; /* Prevents weird blending bugs */
+      }
+
+      .nav-center { 
+        position: fixed !important; 
+        top: 0 !important; left: 0 !important; 
+        width: 100vw !important; height: 100vh !important; 
+        background: var(--bg-color) !important; /* Solid color */
+        flex-direction: column !important; 
+        justify-content: center !important; 
+        align-items: center !important;
+        border-radius: 0 !important; 
+        transform: translateX(100%); 
+        transition: transform 0.4s ease-in-out;
+        z-index: -1 !important; /* Sits directly behind the top navbar controls */
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+      
+      nav.menu-active .nav-center { 
+        transform: translateX(0) !important; 
+      }
+      
+      .nav-center a { 
+        font-size: 24px; 
+        padding: 15px; 
+        width: 100%; 
+        text-align: center; 
+        color: var(--text-main); 
+      }
+      
+      .nav-center a:hover, .nav-center a.active { 
+        background: var(--card-bg); 
+        color: var(--brand-brown); 
+      }
+      
+      .nav-highlight { display: none !important; }
+
+      /* Hero Section Adjustments */
+      #home { flex-direction: column; padding: 110px 24px 60px; text-align: center; }
+      .hero-content { padding-right: 0; margin-bottom: 50px; display: flex; flex-direction: column; align-items: center;}
+      .hero-title { font-size: clamp(50px, 15vw, 80px); line-height: 1; letter-spacing: -2px; margin-bottom: 24px;}
+      .hero-desc { text-align: center; }
+      .hero-pricing { justify-content: center; gap: 20px; margin-bottom: 30px; }
+      .price-item .amount { font-size: 36px; }
+      
+      .product-selector-box { padding: 12px 20px; border-radius: 40px; gap: 12px; flex-wrap: wrap; justify-content: center; }
+      .thumb-wrapper { width: 50px; height: 50px; }
+
+      /* Hero Visuals for Mobile */
+      .hero-right { width: 100%; height: auto; min-height: 300px; padding-top: 20px; }
+      .hero-golden-shape { width: 100%; height: 100%; top: 0; border-radius: 30px; }
+      .hero-product-img { position: relative; height: clamp(280px, 60vw, 400px); top: auto; left: auto; animation: none; transform: translateY(-30px); }
+      .hero-vertical-text { display: none; } /* Tinago ito para hindi magulo sa maliit na screen */
+
+      #menu, #reviews, #branches, #about, #contact { padding: 70px 20px; }
+      
+      .menu-tabs { gap: 8px; flex-wrap: wrap; }
+      .menu-tab { padding: 10px 16px; font-size: 12px; }
+      
+      /* GINAWANG 2 COLUMNS ANG DRINKS SA MOBILE */
+      .menu-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; }
+      .menu-card-img-wrap { height: 130px; padding: 12px; }
+      .menu-card img { height: 100px; }
+      .menu-card-name { font-size: 12px; }
+
+      .reviews-grid { grid-template-columns: 1fr; }
+      .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+      .form-row { grid-template-columns: 1fr; gap: 16px; }
+      
+      .branches-layout { grid-template-columns: 1fr; gap: 30px;}
+      .branches-sidebar { position: static !important; text-align: center; align-items: center; }
+      .branches-sidebar-title { writing-mode: horizontal-tb !important; transform: none !important; font-size: 32px !important; margin-top: 15px;}
+      .branches-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav id="navbar">
+  <img src="https://www.figma.com/api/mcp/asset/92c2f39d-03f7-4d85-b87e-408aad99ae60" alt="BigBrew Logo" class="nav-logo" id="navLogoImg">
+  
+  <div class="nav-center" id="navLinks">
+    <div class="nav-highlight" id="navHighlight"></div>
+    <a href="#home" class="active" data-section="home">Home</a>
+    <a href="#menu" data-section="menu">Menu</a>
+    <a href="#reviews" data-section="reviews">Reviews</a>
+    <a href="#branches" data-section="branches">Branches</a>
+    <a href="#about" data-section="about">About Us</a>
+    <a href="#contact" data-section="contact">Contact Us</a>
+  </div>
+  
+  <div class="nav-right-controls">
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">☀️</button>
+    <div class="hamburger" id="hamburgerMenu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div> 
+</nav>
+
+<section id="home">
+  <div class="hero-content">
+    <p class="hero-tagline">Big in taste, Bit in price.</p>
+    <h1 class="hero-title">BigBrew</h1>
+
+    <h3 class="hero-product-title">Overload Pistachio Frappe</h3>
+    <p class="hero-desc">
+      Experience the ultimate indulgence with an overload of rich pistachio flavor. This decadent treat is blended to perfection and loaded with delicious toppings, making it your new favorite escape.
+    </p>
+
+    <div class="hero-pricing">
+      <div class="price-item">
+        <label>Medio</label>
+        <span class="amount">₱76</span>
+      </div>
+      <div class="price-item">
+        <label>Grande</label>
+        <span class="amount">₱86</span>
+      </div>
+    </div>
+
+    <div class="product-selector-box">
+      <div class="thumb-wrapper active" 
+           data-img="home/pistachio.png"
+           data-name="Overload Pistachio Frappe" 
+           data-solid="OVERLOAD"
+           data-outline="PISTACHIO"
+           data-desc="Experience the ultimate indulgence with an overload of rich pistachio flavor. This decadent treat is blended to perfection and loaded with delicious toppings, making it your new favorite escape."
+           data-medio="₱76" data-grande="₱86">
+        <img src="https://www.figma.com/api/mcp/asset/4e49b209-7ab3-4073-8e14-1010decb0b33" alt="Pistachio">
+      </div>
+        
+      <div class="thumb-wrapper" 
+           data-img="home/scramble.png"
+           data-name="Streats Strawberry Scramble" 
+           data-solid="STRAWBERRY"
+           data-outline="SCRAMBLE"
+           data-desc="Dive into a vibrant mix of sweet strawberries and delightful textures. This refreshing treat is perfectly blended, making it your new favorite escape. Enjoy this playful and absolutely irresistible strawberry delight."
+           data-medio="₱49" data-grande="₱59">
+        <img src="https://www.figma.com/api/mcp/asset/362d974f-5dd2-4c16-9a9a-3956efce42d1" alt="Scramble">
+      </div>
+        
+      <div class="thumb-wrapper" 
+           data-img="home/darkchoco.png"
+           data-name="Dark Choco Milktea" 
+           data-solid="DARK"
+           data-outline="CHOCO"
+           data-desc="Indulge in the rich, deep flavor of premium dark chocolate. This decadent milktea is perfectly balanced, offering a bold yet creamy escape. Experience the satisfying and absolutely irresistible dark chocolate delight."
+           data-medio="₱39" data-grande="Best Seller">
+        <img src="https://www.figma.com/api/mcp/asset/34bdc8cb-c5b7-4694-a2b4-8add40d78f69" alt="Dark Choco">
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-golden-shape"></div>
+
+    <img src="home/pistachio.png" alt="Overload Pistachio Frappe" class="hero-product-img" id="heroProductImg">
+    
+    <div class="hero-vertical-text">
+      <span class="text-solid" id="vertSolidText">OVERLOAD</span><br>
+      <span class="text-outline" id="vertOutlineText">PISTACHIO</span>
+    </div>
+
+  </div>
+</section>
+
+<div class="marquee-section">
+  <div class="marquee-track">
+    <span class="marquee-item">BIGBREW</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">BIGBREW</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">BIGBREW</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">BIGBREW</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">BIGBREW</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">BIGBREW</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">BIGBREW</span>
+    <span class="marquee-item">✦</span>
+    <span class="marquee-item">BIGBREW</span>
+    <span class="marquee-item">✦</span>
+  </div>
+</div>
+
+<section id="menu">
+  <div class="section-header fade-in">
+    <p class="section-label">Our Drinks</p>
+    <h2 class="section-title">MENU</h2>
+  </div>
+
+  <div class="menu-tabs">
+    <button class="menu-tab active" data-tab="milktea">Milk Tea</button>
+    <button class="menu-tab" data-tab="coffee">Coffee</button>
+    <button class="menu-tab" data-tab="praf">Praf</button>
+    <button class="menu-tab" data-tab="fruittea">Fruit Tea</button>
+  </div>
+
+  <div class="menu-panel active" id="tab-milktea">
+    <div class="menu-grid">
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="milktea/darkchoco.png" alt="Dark Choco"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Dark Choco</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="milktea/taro.png" alt="Taro"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Taro</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="milktea/okinawa.png" alt="Okinawa"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Okinawa</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="milktea/strawberry.png" alt="Strawberry"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Strawberry</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="milktea/matcha.png" alt="Matcha"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Matcha</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="milktea/chocolate.png" alt="Chocolate"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Chocolate</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="milktea/redvelvet.png" alt="Red Velvet"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Red Velvet</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="milktea/cheesecake.png" alt="Cheesecake"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Cheesecake</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="milktea/chocokisses.png" alt="Choco Kisses"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Choco Kisses</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="milktea/saltedcaramel.png" alt="Salted Caramel"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Salted Caramel</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="milktea/cookiesandcream.png" alt="Cookies and Cream"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Cookies & Cream</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="milktea/wintermelon.png" alt="Winter Melon"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Winter Melon</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="menu-panel" id="tab-coffee">
+    <div class="menu-grid">
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="coffee/brusko.png" alt="Brusko"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Brusko</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="coffee/caramel.png" alt="Caramel"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Caramel</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="coffee/fudge.png" alt="Fudge"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Fudge</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="coffee/macchiato.png" alt="Macchiato"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Macchiato</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="coffee/matcha.png" alt="Matcha"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Matcha</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="coffee/mocha.png" alt="Mocha"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Mocha</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="coffee/spanishlatte.png" alt="Spanish Latte"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Spanish Latte</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="coffee/vanilla.png" alt="Vanilla"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Vanilla</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="menu-panel" id="tab-praf">
+    <div class="menu-grid">
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="praf/caramelmacchiato.png" alt="Caramel Macchiato"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Caramel Macchiato</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="praf/cheesecake.png" alt="Cheesecake"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Cheesecake</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="praf/chocolatepraf.png" alt="Chocolate"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Chocolate</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="praf/coffeejellypraf.png" alt="Coffee Jelly"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Coffee Jelly</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="praf/cookiesncream.png" alt="Cookies & Cream"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Cookies & Cream</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="praf/creamyavocado.png" alt="Creamy Avocado"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Creamy Avocado</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="praf/javachip.png" alt="Java Chip"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Java Chip</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="praf/matcha.png" alt="Matcha"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Matcha</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="praf/mochapraf.png" alt="Mocha"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Mocha</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="praf/strawberrypraf.png" alt="Strawberry"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Strawberry</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="praf/taropraf.png" alt="Taro"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Taro</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="praf/vanillacoffee.png" alt="Vanilla"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Vanilla</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="menu-panel" id="tab-fruittea">
+    <div class="menu-grid">
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="fruittea/blueberryft.png" alt="Blueberry"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Blueberry</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="fruittea/greenappleft.png" alt="Green Apple"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Green Apple</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="fruittea/honeypeachft.png" alt="Honey Peach"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Honey Peach</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="fruittea/kiwift.png" alt="Kiwi"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Kiwi</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="fruittea/lemonft.png" alt="Lemon"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Lemon</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="fruittea/lycheeft.png" alt="Lychee"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Lychee</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="fruittea/mangoft.png" alt="Mango"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Mango</p></div>
+      </div>
+      <div class="menu-card fade-in">
+        <div class="menu-card-img-wrap"><img src="fruittea/strawberryft.png" alt="Strawberry"></div>
+        <div class="menu-card-info"><p class="menu-card-name">Strawberry</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="reviews">
+  <div class="section-header fade-in">
+    <p class="section-label">What People Say</p>
+    <h2 class="section-title">REVIEWS</h2>
+  </div>
+
+  <div class="reviews-grid">
+    <div class="review-card fade-in">
+      <div class="stars">
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <p class="review-text">"The Dark Choco Milktea is absolutely my go-to! The flavor is rich and not too sweet. Best milktea in Rizal!"</p>
+      <p class="review-author">— Maria Santos</p>
+    </div>
+
+    <div class="review-card fade-in">
+      <div class="stars">
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <p class="review-text">"Overload Pistachio Frappe is a game changer! Very unique flavor and super affordable. BigBrew never disappoints!"</p>
+      <p class="review-author">— Juan Dela Cruz</p>
+    </div>
+
+    <div class="review-card fade-in">
+      <div class="stars">
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <p class="review-text">"Great value for money! The Strawberry Scramble has the perfect blend of flavors. Staff is always friendly and the store is very clean."</p>
+      <p class="review-author">— Ana Reyes</p>
+    </div>
+
+    <div class="review-card fade-in">
+      <div class="stars">
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <p class="review-text">"Sulit na sulit! Ang sarap ng Taro Milktea at super bilis ng service. Will definitely come back again and again!"</p>
+      <p class="review-author">— Carlo Mendoza</p>
+    </div>
+
+    <div class="review-card fade-in">
+      <div class="stars">
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <p class="review-text">"Love the new Mango Summer promo! Super refreshing especially on hot days. BigBrew is truly big in taste and easy on the budget."</p>
+      <p class="review-author">— Jasmine Villanueva</p>
+    </div>
+
+    <div class="review-card fade-in">
+      <div class="stars">
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <p class="review-text">"I tried the Matcha Praf and it was amazing! Creamy and just the right sweetness. BigBrew keeps outdoing itself with every order."</p>
+      <p class="review-author">— Paolo Garcia</p>
+    </div>
+  </div>
+</section>
+
+<section id="branches">
+  <div class="section-header fade-in">
+    <p class="section-label">Find Us Near You</p>
+    <h2 class="section-title">BRANCHES</h2>
+  </div>
+
+  <div class="branches-layout">
+    <div class="branches-sidebar fade-in">
+      <a href="https://www.google.com/maps/search/BigBrew+Rizal" target="_blank" class="branches-more-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+        MORE BRANCHES
+      </a>
+      <p class="branches-sidebar-title">OUR BRANCHES IN RIZAL</p>
+    </div>
+
+    <div class="branches-grid">
+      <div class="branch-card fade-in">
+        <p class="branch-name">BigBrew Botong</p>
+        <p class="branch-addr">Purok 30, Ponkan St, Villa Guido</p>
+      </div>
+      <div class="branch-card fade-in">
+        <p class="branch-name">BigBrew Antipolo</p>
+        <p class="branch-addr">Cathedral, Antipolo, Rizal</p>
+      </div>
+      <div class="branch-card fade-in">
+        <p class="branch-name">BigBrew Muzon</p>
+        <p class="branch-addr">G4VV+VJ2, Taytay, 1920 Rizal</p>
+      </div>
+      <div class="branch-card fade-in">
+        <p class="branch-name">Bigbrew Teresa</p>
+        <p class="branch-addr">Philsin Road, Teresa, 1880 Rizal</p>
+      </div>
+      <div class="branch-card fade-in">
+        <p class="branch-name">BigBrew San Isidro</p>
+        <p class="branch-addr">38 E Rodriguez Ave, Taytay, 1920 Rizal</p>
+      </div>
+      <div class="branch-card fade-in">
+        <p class="branch-name">BigBrew San Jose</p>
+        <p class="branch-addr">Blk1 Lt 12, Sen. L. Sumulong, Sitio Pulong Banal</p>
+      </div>
+      <div class="branch-card fade-in">
+        <p class="branch-name">BigBrew Siete Media</p>
+        <p class="branch-addr">Siete Media, L. Sumulong</p>
+      </div>
+      <div class="branch-card fade-in">
+        <p class="branch-name">BigBrew Santana</p>
+        <p class="branch-addr">H5VW+825, Santana Drive, Antipolo, 1870 Rizal</p>
+      </div>
+      <div class="branch-card fade-in">
+        <p class="branch-name">BigBrew Binangonan</p>
+        <p class="branch-addr">Manila E Rd, Binangonan, Rizal</p>
+      </div>
+      <div class="branch-card fade-in">
+        <p class="branch-name">BigBrew Angono</p>
+        <p class="branch-addr">M. Diaz St, St, Angono, 1920 Rizal</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="about-banner fade-in">
+    <img src="aboutus.png" alt="About BigBrew Background" class="about-banner-img">
+    <div class="about-banner-text">
+      <p class="section-label" style="color:#ffffff; font-size:24px; font-weight:700; text-transform:none; letter-spacing:2px; margin-bottom:4px; text-shadow:1px 2px 4px rgba(0,0,0,0.6);">Who We Are</p>
+      <h2 class="section-title" style="margin-bottom:0; text-shadow:2px 4px 10px rgba(0,0,0,0.6); color:#ffffff;">ABOUT US</h2>
+    </div>
+  </div>
+
+  <div class="about-grid">
+    <div class="about-card fade-in">
+      <p class="about-card-num">01</p>
+      <h3 class="about-card-title">Mission</h3>
+      <p class="about-card-text">To ensure customer contentment by providing affordable, high-quality beverages and snacks through good service and an inviting, clean ambiance.</p>
+    </div>
+    <div class="about-card fade-in">
+      <p class="about-card-num">02</p>
+      <h3 class="about-card-title">Vision</h3>
+      <p class="about-card-text">To become a leading Filipino coffee and milk tea franchise by happily serving the best take-out beverages in the Philippines and inspiring moments of happiness and optimism.</p>
+    </div>
+  </div>
+
+  <div class="social-links">
+    <a href="https://www.facebook.com/BigBrewOfficial" class="social-link" target="_blank" title="Facebook">
+      <img src="https://www.figma.com/api/mcp/asset/612163ba-cc2a-411b-b2bd-1a94a7881390" alt="Facebook" style="width:28px;height:28px;object-fit:contain;">
+    </a>
+    <a href="https://www.instagram.com/bigbrew.main" class="social-link" target="_blank" title="Instagram">
+      <img src="https://www.figma.com/api/mcp/asset/878af0e7-045a-4279-9334-7b9d9a7c59e4" alt="Instagram" style="width:28px;height:28px;object-fit:contain;">
+    </a>
+    <a href="https://bigbrew.com.ph" class="social-link" target="_blank" title="Website">
+      <img src="https://www.figma.com/api/mcp/asset/4da75a61-64c2-4853-b61b-72c12f9aae1c" alt="Website" style="width:28px;height:28px;object-fit:contain;">
+    </a>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="section-header fade-in">
+    <p class="section-label">Get in Touch</p>
+    <h2 class="section-title">CONTACT</h2>
+  </div>
+
+  <div class="contact-grid">
+    <div class="contact-left fade-in">
+      <h2>have a<br>question?</h2>
+      <p>We're here to help! Fill out the form or reach us via email or phone. Our Customer Care Team is available to help you get the best experience out of BigBrew — whether you have an issue about your order or are looking for franchise information.</p>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:24px;">Everyone gets a personalized response. Please allow 24 hours during business hours (M-F, 11am–10pm PT).</p>
+
+      <ul class="contact-email-list">
+        <li><span class="email-dot"></span><a href="mailto:support@bigbrew.ph">support@bigbrew.ph</a></li>
+        <li><span class="email-dot"></span><a href="mailto:orders@bigbrew.ph">orders@bigbrew.ph</a></li>
+        <li><span class="email-dot"></span><a href="mailto:franchise@bigbrew.ph">franchise@bigbrew.ph</a></li>
+        <li><span class="email-dot"></span><a href="mailto:feedback@bigbrew.ph">feedback@bigbrew.ph</a></li>
+      </ul>
+    </div>
+
+    <div class="contact-form fade-in">
+      <div class="form-row">
+        <input class="form-input" type="text" placeholder="*First Name">
+        <input class="form-input" type="text" placeholder="*Last Name">
+      </div>
+      <input class="form-input" type="email" placeholder="*Email">
+      <input class="form-input" type="tel" placeholder="Phone Number (optional)">
+      <select class="form-input" style="appearance:none;cursor:pointer;">
+        <option value="" disabled selected style="color:var(--input-placeholder);">*Select your topic</option>
+        <option>Order Inquiry</option>
+        <option>Franchise Inquiry</option>
+        <option>Product Feedback</option>
+        <option>Other</option>
+      </select>
+      <input class="form-input" type="text" placeholder="*Order Number">
+      <input class="form-input" type="text" placeholder="*Branch">
+      <textarea class="form-input" placeholder="*Message"></textarea>
+      <button class="submit-btn">SUBMIT</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 BIGBREW — Big in Taste, Bit in Price</p>
+</footer>
+
+<script>
+  // ---- THEME TOGGLE (LIGHT/DARK MODE & LOGO SWAP) ----
+  const themeToggle = document.getElementById('themeToggle');
+  const navLogoImg = document.getElementById('navLogoImg'); 
+
+  const darkLogoUrl = "https://www.figma.com/api/mcp/asset/92c2f39d-03f7-4d85-b87e-408aad99ae60";
+  const lightLogoUrl = "bb.webp";
+
+  themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('light-mode');
+    
+    if (document.body.classList.contains('light-mode')) {
+      themeToggle.textContent = '🌙'; 
+      navLogoImg.src = lightLogoUrl; 
+    } else {
+      themeToggle.textContent = '☀️';
+      navLogoImg.src = darkLogoUrl; 
+    }
+  });
+
+  // ---- MOBILE HAMBURGER MENU ----
+  const hamburgerMenu = document.getElementById('hamburgerMenu');
+  const navbar = document.getElementById('navbar');
+  
+  hamburgerMenu.addEventListener('click', () => {
+    hamburgerMenu.classList.toggle('active');
+    navbar.classList.toggle('menu-active'); // Ginawang menu-active directly sa nav
+    document.body.classList.toggle('no-scroll'); // Pini-prevent ang pag-scroll ng background
+  });
+
+  // ---- SCROLL ANIMATIONS ----
+  const fadeElements = document.querySelectorAll('.fade-in');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 }); 
+
+  fadeElements.forEach(el => observer.observe(el));
+
+  // ---- NAV HIGHLIGHT & CLICK LOGIC ----
+  const navLinks = document.querySelectorAll('.nav-center a');
+  const highlight = document.getElementById('navHighlight');
+
+  function moveHighlight(el) {
+    if (!el || window.innerWidth <= 900) return; 
+    const rect = el.getBoundingClientRect();
+    const parentRect = el.closest('.nav-center').getBoundingClientRect();
+    highlight.style.left = (rect.left - parentRect.left) + 'px';
+    highlight.style.width = rect.width + 'px';
+  }
+
+  function setActive(el) {
+    navLinks.forEach(l => l.classList.remove('active'));
+    el.classList.add('active');
+    moveHighlight(el);
+  }
+
+  const activeLink = document.querySelector('.nav-center a.active');
+  if (activeLink) moveHighlight(activeLink);
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      setActive(e.currentTarget);
+      
+      // Auto-close ng menu kapag pumili ka ng link sa mobile mode
+      if(window.innerWidth <= 900) {
+        hamburgerMenu.classList.remove('active');
+        navbar.classList.remove('menu-active');
+        document.body.classList.remove('no-scroll');
+      }
+    });
+  });
+
+  // ---- SCROLL NAV ----
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
+    const sections = ['home', 'menu', 'reviews', 'branches', 'about', 'contact'];
+    let current = 'home';
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && window.scrollY >= el.offsetTop - 200) current = id;
+    });
+    navLinks.forEach(link => {
+      if (link.dataset.section === current) setActive(link);
+    });
+  });
+
+  // ---- PRODUCT SELECTOR UPDATE LOGIC ----
+  const thumbWrappers = document.querySelectorAll('.thumb-wrapper');
+  const heroImg = document.getElementById('heroProductImg');
+  const heroName = document.querySelector('.hero-product-title'); 
+  const heroDesc = document.querySelector('.hero-desc');
+  
+  const vertSolidText = document.getElementById('vertSolidText');
+  const vertOutlineText = document.getElementById('vertOutlineText');
+  
+  const priceMedio = document.querySelector('.price-item:first-child .amount');
+  const priceGrande = document.querySelector('.price-item:last-child .amount');
+  const priceGrandeLabel = document.querySelector('.price-item:last-child label');
+
+  thumbWrappers.forEach(wrapper => {
+    wrapper.addEventListener('click', () => {
+      thumbWrappers.forEach(w => w.classList.remove('active'));
+      wrapper.classList.add('active');
+      
+      heroImg.src = wrapper.dataset.img;
+      heroName.textContent = wrapper.dataset.name;
+      heroDesc.textContent = wrapper.dataset.desc;
+      priceMedio.textContent = wrapper.dataset.medio;
+      
+      vertSolidText.textContent = wrapper.dataset.solid;
+      vertOutlineText.textContent = wrapper.dataset.outline;
+      
+      if (wrapper.dataset.grande === 'Best Seller') {
+        priceGrande.textContent = '';
+        priceGrandeLabel.textContent = '⭐ BEST SELLER';
+      } else {
+        priceGrande.textContent = wrapper.dataset.grande;
+        priceGrandeLabel.textContent = 'Grande';
+      }
+    });
+  });
+
+  // ---- MENU TABS ----
+  const tabs = document.querySelectorAll('.menu-tab');
+  const panels = document.querySelectorAll('.menu-panel');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+
+      tab.classList.add('active');
+      const activePanel = document.getElementById('tab-' + tab.dataset.tab);
+      activePanel.classList.add('active');
+
+      activePanel.querySelectorAll('.fade-in').forEach(el => {
+        el.classList.remove('visible');
+        setTimeout(() => {
+          el.classList.add('visible');
+        }, 50);
+      });
+    });
+  });
+</script>
+</body>
+</html>
